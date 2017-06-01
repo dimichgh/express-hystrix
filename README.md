@@ -1,5 +1,4 @@
 # express-hystrix
-=================
 
 The module provides a middleware that wraps every http incoming request into a hystrix command that provides fail fast behavior as well as exposes metrics for every express route.
 
