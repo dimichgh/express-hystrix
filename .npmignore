@@ -1,0 +1,11 @@
+.jshintrc
+.jshintignore
+doc
+test
+examples
+.atom-build.json
+.git
+yarn.lock
+.npmignore
+.gitignore
+coverage/*

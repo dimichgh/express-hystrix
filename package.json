@@ -1,0 +1,40 @@
+{
+  "name": "express-hystrix",
+  "version": "0.1.0",
+  "description": "The module provides a hystrix command middleware for express based applications. The module should be used together with [hystrix-too-busy](https://github.com/trooba/hystrix-too-busy) module.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test",
+    "test-coverage": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --  --timeout 4s -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimichgh/express-hystrix.git"
+  },
+  "keywords": [
+    "toobusy",
+    "too-busy",
+    "busy",
+    "express",
+    "hystrix",
+    "hystrixjs"
+  ],
+  "author": "Dmytro Semenov <dimichsdg@yahoo.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dimichgh/express-hystrix/issues"
+  },
+  "homepage": "https://github.com/dimichgh/express-hystrix#readme",
+  "devDependencies": {
+    "async": "^2.4.1",
+    "express": "^4.15.3",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.4.2",
+    "supertest": "^3.0.0"
+  },
+  "dependencies": {
+    "hoek": "^4.1.1",
+    "hystrixjs": "^0.2.0",
+    "rxjs": "^5.4.0"
+  }
+}
