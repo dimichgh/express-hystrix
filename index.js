@@ -50,11 +50,13 @@ module.exports = function hystrixFactory(config) {
         let fallback = (err, args) => {
             const next = args.pop();
             const res = args.pop();
-            if (res.finished) {
-                return Promise.reject(err);
-            }
-            next(err);
-            return Promise.reject(err);
+            return new Promise((resolve, reject) => {
+                if (res.finished) {
+                    return reject(err);
+                }
+                next(err);
+                resolve();
+            });
         };
 
         // custom fallback

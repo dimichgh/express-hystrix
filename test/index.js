@@ -165,6 +165,7 @@ describe(__filename, () => {
                     Assert.equal('ok', res.text);
 
                     const metricsHome = Hystrix.metricsFactory.getOrCreate({commandKey:'home'});
+                    Assert.equal(0, metricsHome.getRollingCount('FALLBACK_SUCCESS'));
                     Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
                     Assert.equal(1, metricsHome.getRollingCount('FAILURE'));
                     Assert.equal(0, metricsHome.getRollingCount('SHORT_CIRCUITED'));
@@ -179,6 +180,7 @@ describe(__filename, () => {
                     Assert.equal('fallback', res.text);
 
                     const metricsHome = Hystrix.metricsFactory.getOrCreate({commandKey:'home'});
+                    Assert.equal(0, metricsHome.getRollingCount('FALLBACK_SUCCESS'));
                     Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
                     Assert.equal(1, metricsHome.getRollingCount('FAILURE'));
                     Assert.equal(1, metricsHome.getRollingCount('SHORT_CIRCUITED'));
@@ -228,6 +230,7 @@ describe(__filename, () => {
                 const metricsHome = Hystrix.metricsFactory.getOrCreate({commandKey:'home'});
                 Assert.equal(1, metricsHome.getRollingCount('SUCCESS'));
                 Assert.equal(0, metricsHome.getRollingCount('FAILURE'));
+                Assert.equal(0, metricsHome.getRollingCount('FALLBACK_SUCCESS'));
 
                 next();
             }
@@ -317,6 +320,7 @@ describe(__filename, () => {
                     Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
                     Assert.equal(1, metricsHome.getRollingCount('FAILURE'));
                     Assert.equal(0, metricsHome.getRollingCount('SHORT_CIRCUITED'));
+                    Assert.equal(1, metricsHome.getRollingCount('FALLBACK_FAILURE'));
 
                     next();
                 });
@@ -331,6 +335,7 @@ describe(__filename, () => {
                     Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
                     Assert.equal(1, metricsHome.getRollingCount('FAILURE'));
                     Assert.equal(0, metricsHome.getRollingCount('SHORT_CIRCUITED'));
+                    Assert.equal(1, metricsHome.getRollingCount('FALLBACK_FAILURE'));
 
                     next();
                 });
@@ -345,6 +350,7 @@ describe(__filename, () => {
                     Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
                     Assert.equal(2, metricsHome.getRollingCount('FAILURE'));
                     Assert.equal(0, metricsHome.getRollingCount('SHORT_CIRCUITED'));
+                    Assert.equal(2, metricsHome.getRollingCount('FALLBACK_FAILURE'));
 
                     next();
                 });
@@ -359,6 +365,10 @@ describe(__filename, () => {
                     Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
                     Assert.equal(1, metricsHome.getRollingCount('FAILURE'));
                     Assert.equal(1, metricsHome.getRollingCount('SHORT_CIRCUITED'));
+                    Assert.equal(0, metricsHome.getRollingCount('FALLBACK_SUCCESS'));
+                    // it is still failure as open circuit does not increment fallback
+                    // even when fallback is performed
+                    Assert.equal(1, metricsHome.getRollingCount('FALLBACK_FAILURE'));
 
                     next();
                 });
