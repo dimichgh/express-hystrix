@@ -609,4 +609,72 @@ describe(__filename, () => {
             }
         ], next);
     });
+
+    it('should use custom fallback and command runner factory as string args', next => {
+        const app = express();
+        app.use(commandFactory({
+            commandResolver: req => {
+                return req.path === '/' ? 'home' : 'other';
+            },
+            runCommandFactory: require.resolve('./fixtures/run-command-factory'),
+            fallback: require.resolve('./fixtures/fallback'),
+            hystrix: {
+                other: {
+                    circuitBreakerRequestVolumeThreshold: 1
+                }
+            }
+        }));
+        app.use((req, res, next) => {
+            res.status(200).end('ok');
+        });
+        app.use((req, res, next) => {
+            next(new Error('Should never happen'));
+        });
+        app.use((err, req, res, next) => {
+            res.status(200).end('fallback');
+        });
+
+        const agent = supertest(app);
+
+        Async.series([
+            next => {
+                agent.get('/').end((err, res) => {
+                    Assert.ok(!err, err && err.stack);
+                    Assert.equal('ok', res.text);
+
+                    const metricsHome = Hystrix.metricsFactory.getOrCreate({commandKey:'home'});
+                    Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
+                    Assert.equal(1, metricsHome.getRollingCount('FAILURE'));
+                    Assert.equal(0, metricsHome.getRollingCount('SHORT_CIRCUITED'));
+
+                    next();
+                });
+            },
+
+            next => {
+                agent.get('/').end((err, res) => {
+                    Assert.ok(!err, err && err.stack);
+                    Assert.equal('ok', res.text);
+
+                    const metricsHome = Hystrix.metricsFactory.getOrCreate({commandKey:'home'});
+                    Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
+                    Assert.equal(2, metricsHome.getRollingCount('FAILURE'));
+                    Assert.equal(0, metricsHome.getRollingCount('SHORT_CIRCUITED'));
+
+                    next();
+                });
+            },
+
+            next => {
+                // validate fallback success
+                const metricsHome = Hystrix.metricsFactory.getOrCreate({commandKey:'home'});
+                Assert.equal(0, metricsHome.getRollingCount('SUCCESS'));
+                Assert.equal(2, metricsHome.getRollingCount('FAILURE'));
+                Assert.equal(2, metricsHome.getRollingCount('FALLBACK_SUCCESS'));
+                Assert.equal(0, metricsHome.getRollingCount('SHORT_CIRCUITED'));
+
+                next();
+            }
+        ], next);
+    });
 });
