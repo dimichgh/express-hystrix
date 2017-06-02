@@ -7,6 +7,27 @@ The module provides a middleware that wraps every http incoming request into a h
 [![Downloads](https://img.shields.io/npm/dm/express-hystrix.svg)](http://npm-stat.com/charts.html?package=express-hystrix)
 [![Known Vulnerabilities](https://snyk.io/test/github/dimichgh/express-hystrix/badge.svg)](https://snyk.io/test/github/dimichgh/express-hystrix)
 
+### The idea
+
+Hystrix component proved to be really useful in the service client pipeline to follow fail fast pattern as well as provide real-time metrics. This case intends to make service clients 'nice' to the services to avoid overloading them in times of stress. But from service point of view the service does not know who is going to call it and how, especially when it is exposed to the external traffic.
+
+Given the above, why not provide them same hystrix capabilities to frontend and backend side and forcing all clients to be 'nice'?
+
+This modules provides exactly that.
+
+### Possible use-cases
+
+* Allow to quickly short circuit all unknown requests and prevent them from going through the pipeline and consuming precious CPU time.
+* Release back pressure when the circuit is open
+  * It can also react differently to this event
+    * 503 mostly for services
+    * connection reset to initiate browser dns fallback with exponential backoff
+* Act as a rate limiter or DDoS protector
+* Provide valuable runtime metrics
+* Group routes into commands and assign different circuit breaker strategies.
+    * By controlling when circuit gets open we can assign higher priorities to important commands and short circuit less important in times of stress.
+* Configure (enable/disable) specific routes via config of admin console.
+
 ### Install
 
 ```
@@ -15,7 +36,69 @@ $ npm install express-hystrix -S
 
 ### Usage
 
+```js
+const app = express();
+const commandFactory = require('express-hystrix');
+
+app.use(commandFactory());
+```
+
 ### Configuration
+
+#### Custom command runner
+
+The module provides a default command executor based on the request flow or a developer can provide his own.
+
+The executor signature has following spec:
+    function runCommand(command, req, res, next): Promise
+
+    * **command** is a command name for the given request.
+    * **req, res** are express request flow parameters.
+    * **next** is express next handler that must be called once promise is returned to continue request flow
+    * **returns** a Promise that if resolved, will mark hytsrix command as SUCCESS, otherwise as FAILURE.
+
+Example:
+
+```js
+app.use(commandFactory({
+    runCommand: (command, req, res, next) => {
+        return new Promise(resolve, reject) {
+            // mock some logic that needs to be executed to decide on command status
+            setTimeout(resolve, 100);
+            // continue flow, which can be in sync or async in relation to command execution
+            // it depends of requirements
+            next();
+        };
+    }
+}));
+```
+
+#### Custom fallback
+
+The module provides a default fallback handler based on the request flow.
+
+The default fallback will check first if any data has been written to the client and reject quietly, otherwise it will call a fallback.
+
+If one provides his own fallback, he must take the above edge-cases into consideration.
+
+The fallback signature:
+    function fallback(err, command, req, res, next): Promise
+
+    * **returns** a Promise that if resolved will mark fallback as FALLBACK_SUCCESS, otherwise as FALLBACK_FAILURE.
+
+```js
+app.use(commandFactory({
+    fallback: (err, command, req, res, next) => {
+        return new Promise(resolve, reject) {
+            // mock some logic that needs to be executed to decide on command status
+            setTimeout(resolve, 100); // mark fallback as success
+            // continue flow, which can be in sync or async in relation to command execution
+            // it depends of requirements
+            next();
+        };
+    }
+}));
+```
 
 #### Hystrix configuration
 
