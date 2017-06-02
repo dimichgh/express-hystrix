@@ -1,6 +1,6 @@
 {
   "name": "express-hystrix",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "The module provides a hystrix command middleware for express based applications. The module should be used together with [hystrix-too-busy](https://github.com/trooba/hystrix-too-busy) module.",
   "main": "index.js",
   "scripts": {
