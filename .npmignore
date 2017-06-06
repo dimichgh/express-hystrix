@@ -9,3 +9,4 @@ yarn.lock
 .npmignore
 .gitignore
 coverage/*
+docs/images

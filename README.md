@@ -7,6 +7,8 @@ The module provides a middleware that wraps every http incoming request into a h
 [![Downloads](https://img.shields.io/npm/dm/express-hystrix.svg)](http://npm-stat.com/charts.html?package=express-hystrix)
 [![Known Vulnerabilities](https://snyk.io/test/github/dimichgh/express-hystrix/badge.svg)](https://snyk.io/test/github/dimichgh/express-hystrix)
 
+![too-busy in action](docs/images/too-busy-movie.gif)
+
 ### The idea
 
 Hystrix component proved to be really useful in the service client pipeline to follow fail fast pattern as well as provide real-time metrics. This case intends to make service clients 'nice' to the services to avoid overloading them in times of stress. But from service point of view the service does not know who is going to call it and how, especially when it is exposed to the external traffic.
