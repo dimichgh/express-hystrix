@@ -25,11 +25,11 @@ module.exports = function hystrixFactory(config) {
         config.runCommand = require(config.runCommand);
     }
 
-    if (config.runCommandFactory && typeof config.runCommandFactory === 'string') {
-        config.runCommandFactory = require(config.runCommandFactory);
+    if (config.commandExecutorFactory && typeof config.commandExecutorFactory === 'string') {
+        config.commandExecutorFactory = require(config.commandExecutorFactory);
     }
 
-    let runCommand = config.runCommandFactory && config.runCommandFactory(config) ||
+    let runCommand = config.commandExecutorFactory && config.commandExecutorFactory(config) ||
         config.runCommand || defaultRunCommand;
 
     return function hystrix(req, res, next) {

@@ -616,7 +616,7 @@ describe(__filename, () => {
             commandResolver: req => {
                 return req.path === '/' ? 'home' : 'other';
             },
-            runCommandFactory: require.resolve('./fixtures/run-command-factory'),
+            commandExecutorFactory: require.resolve('./fixtures/run-command-factory'),
             fallback: require.resolve('./fixtures/fallback'),
             hystrix: {
                 other: {
