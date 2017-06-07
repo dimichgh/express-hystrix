@@ -54,10 +54,10 @@ The module provides a default command executor based on the request flow or a de
 The executor signature has following spec:
     function runCommand(command, req, res, next): Promise
 
-    * **command** is a command name for the given request.
-    * **req, res** are express request flow parameters.
-    * **next** is express next handler that must be called once promise is returned to continue request flow
-    * **returns** a Promise that if resolved, will mark hytsrix command as SUCCESS, otherwise as FAILURE.
+* __command__ is a command name for the given request.
+* __req, res__ are express request flow parameters.
+* __next__ is express next handler that must be called once promise is returned to continue request flow
+* __returns__ a Promise that if resolved, will mark hytsrix command as SUCCESS, otherwise as FAILURE.
 
 Example:
 
@@ -86,7 +86,7 @@ If one provides his own fallback, he must take the above edge-cases into conside
 The fallback signature:
     function fallback(err, command, req, res, next): Promise
 
-    * **returns** a Promise that if resolved will mark fallback as FALLBACK_SUCCESS, otherwise as FALLBACK_FAILURE.
+* __returns__ a Promise that if resolved will mark fallback as FALLBACK_SUCCESS, otherwise as FALLBACK_FAILURE.
 
 ```js
 app.use(commandFactory({
