@@ -157,10 +157,44 @@ app.use(commandFactory({
 
 __NOTE__ One needs to specify only config parameters that are different from the ones provided in default settings
 
+#### Customize command execution strategy
+
+This allows to plug a custom hystrix command runner. By default it uses a simple express middleware handler.
+
+Plugging a custom command runner can be useful, for example, if you would like add too-busy capability.
+
+Here's how one can do it:
+
+```js
+const app = express();
+const commandFactory = require('express-hystrix');
+const Toobusy = require('hystrix-too-busy');
+
+function tooBusyFactory(config) {
+    Toobusy.init(config);
+
+    return function commandExecutor(command, req, res, next) {
+        return new Promise((resolve, reject) => {
+            Toobusy.getStatus(command, busy => {
+                setImmediate(next);
+                if (busy) {
+                    return reject(new Error('TooBusy'));
+                }
+                resolve();
+            });
+        });
+    };
+}
+
+app.use(commandFactory({
+    commandExecutorFactory: tooBusyFactory
+}));
+```
+
 #### Resolving hystrix command
 
 By default the module will use req.path as a command name which may not be what developers would like to use.
-In such a case the module allows to customize a resolution command which can be mapped to the given route or routes.
+In such a case the module allows to customize a resolution command which can be mapped to the given route or routes or based on request headers information.
 
 ```js
 const app = express();
@@ -209,12 +243,11 @@ app.use(commandFactory({
         if (res.statusCode === 404) {
             Promise.reject(new Error('Bad path'));
         }
-        // mock failure for all requests
         return Promise.resolve();
     }
 }));
 // handle open circuit event
-app.use((err, res, res, next) => {
+app.use((err, req, res, next) => {
     if (err && err.message === 'OpenCircuitError') {
         res.status(500).end('Circuit is open');
         return;
