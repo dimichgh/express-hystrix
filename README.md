@@ -157,7 +157,7 @@ app.use(commandFactory({
 
 __NOTE__ One needs to specify only config parameters that are different from the ones provided in default settings
 
-#### Customize command execution strategy
+#### Customizing command execution strategy
 
 This allows to plug a custom hystrix command runner. By default it uses a simple express middleware handler.
 
