@@ -175,6 +175,8 @@ function tooBusyFactory(config) {
 
     return function commandExecutor(command, req, res, next) {
         return new Promise((resolve, reject) => {
+            // in case you would aggregate too-busy singal across
+            // all command, then do not pass a command below
             Toobusy.getStatus(command, busy => {
                 setImmediate(next);
                 if (busy) {

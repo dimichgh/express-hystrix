@@ -59,6 +59,7 @@ module.exports = function hystrixFactory(config) {
                 if (res.finished) {
                     return reject(err);
                 }
+                err = err && err.message === 'OpenCircuitError' ? err : undefined;
                 next(err);
                 resolve();
             });

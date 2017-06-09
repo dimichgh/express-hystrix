@@ -6,7 +6,7 @@ module.exports = function factory(config) {
     Assert.ok(config.commandExecutorFactory);
     return (command, req, res, next) => {
         return new Promise((resolve, reject) => {
-            next();
+            setImmediate(next);
             // simulate failure
             reject(new Error('Boom'));
         });

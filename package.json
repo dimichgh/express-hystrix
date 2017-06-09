@@ -36,5 +36,8 @@
     "hoek": "^4.1.1",
     "hystrixjs": "^0.2.0",
     "rxjs": "^5.4.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   }
 }
