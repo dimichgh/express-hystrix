@@ -32,6 +32,16 @@ module.exports = function hystrixFactory(config) {
     let runCommand = config.commandExecutorFactory && config.commandExecutorFactory(config) ||
         config.runCommand || defaultRunCommand;
 
+    let fallback = defaultFallback;
+    // custom fallback
+    if (config.fallback) {
+        fallback = (err, args) => {
+            // fallback(err, command, req, res, next)
+            return config.fallback(err, args.shift(), args.shift(), args.shift(), args.shift());
+        };
+    }
+
+
     return function hystrix(req, res, next) {
         const command = config.commandResolver && config.commandResolver(req) || req.path;
 
@@ -51,28 +61,6 @@ module.exports = function hystrixFactory(config) {
             }
         }
 
-        // default fallback
-        let fallback = (err, args) => {
-            const next = args.pop();
-            const res = args.pop();
-            return new Promise((resolve, reject) => {
-                if (res.finished) {
-                    return reject(err);
-                }
-                err = err && err.message === 'OpenCircuitError' ? err : undefined;
-                next(err);
-                resolve();
-            });
-        };
-
-        // custom fallback
-        if (config.fallback) {
-            fallback = (err, args) => {
-                // fallback(err, command, req, res, next)
-                return config.fallback(err, args.shift(), args.shift(), args.shift(), args.shift());
-            };
-        }
-
         commandBuilder
         .fallbackTo(fallback)
         .build()
@@ -81,6 +69,20 @@ module.exports = function hystrixFactory(config) {
             // skip it
         });
     };
+
+    // default fallback
+    function defaultFallback(err, args) {
+        const next = args.pop();
+        const res = args.pop();
+        return new Promise((resolve, reject) => {
+            if (res.finished) {
+                return reject(err);
+            }
+            err = err && err.message === 'OpenCircuitError' ? err : undefined;
+            next(err);
+            resolve();
+        });
+    }
 
     function defaultRunCommand(command, req, res, next) {
         return new Promise((resolve, reject) => {
