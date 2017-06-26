@@ -15,7 +15,7 @@ Hystrix component proved to be really useful in the service client pipeline to f
 
 Given the above, why not provide them same hystrix capabilities to frontend and backend side and forcing all clients to be 'nice'?
 
-This modules provides exactly that.
+This modules provides exactly that. For more details on this topic, please read these blog posts [Part 1](https://medium.com/@dimichmm/building-resilient-platform-part-1-51b852588fb3) and [Part 2](https://medium.com/@dimichmm/building-resilient-platform-part-2-509c9550617d).
 
 ### Possible use-cases
 
