@@ -1,5 +1,7 @@
 # express-hystrix
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/dimichgh/express-hystrix.svg)](https://greenkeeper.io/)
+
 The module provides a middleware that wraps every http incoming request into a hystrix command that provides fail fast behavior as well as exposes metrics for every express route.
 
 [![codecov](https://codecov.io/gh/dimichgh/express-hystrix/branch/master/graph/badge.svg)](https://codecov.io/gh/dimichgh/express-hystrix)
