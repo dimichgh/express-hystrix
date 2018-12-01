@@ -33,7 +33,7 @@
     "supertest": "^3.0.0"
   },
   "dependencies": {
-    "hoek": "^4.1.1",
+    "hoek": "^6.1.2",
     "hystrixjs": "^0.2.0",
     "rxjs": "^5.4.0"
   },
