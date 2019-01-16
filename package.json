@@ -30,7 +30,7 @@
     "express": "^4.15.3",
     "istanbul": "^0.4.5",
     "mocha": "^3.4.2",
-    "supertest": "^3.0.0"
+    "supertest": "^3.4.0"
   },
   "dependencies": {
     "hoek": "^4.1.1",
